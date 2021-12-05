@@ -46,7 +46,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                         if (DatabaseService.exists(message.getChatId())) {
                             SendChatAction sendChatAction = new SendChatAction();
                             sendChatAction.setAction(ActionType.TYPING);
-                            sendChatAction.setChatId(message.getChatId());
+                            sendChatAction.setChatId(message.getChatId().toString());
                             Language userLanguage = DatabaseService.getUserLanguage(update);
                             SendMessage greeting = MessageService.getGreetingWithoutUpdate(update, userLanguage);
                             execute(greeting);
@@ -54,19 +54,19 @@ public class UpdatesController extends TelegramLongPollingBot {
                         } else {
                             SendChatAction sendChatAction = new SendChatAction();
                             sendChatAction.setAction(ActionType.TYPING);
-                            sendChatAction.setChatId(message.getChatId());
+                            sendChatAction.setChatId(message.getChatId().toString());
                             execute(sendChatAction);
                             execute(stiker);
                             execute(MessageService.getStart(update));
                         }
                     }else if (text.equals("/lang")){
                         SendMessage sendMessage = new SendMessage();
-                        sendMessage.setChatId(message.getChatId());
+                        sendMessage.setChatId(message.getChatId().toString());
                         SendMessage choose = MessageService.chooseLang(update);
                         execute(choose);
                     }else if (text.equals("/profile")){
                         SendMessage sendMessage = new SendMessage();
-                        sendMessage.setChatId(message.getChatId());
+                        sendMessage.setChatId(message.getChatId().toString());
                         sendMessage.setText("Savol taklif mulohazalar uchun \nMurojat : @JavaSpringDev");
                         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
                         inlineKeyboardButton.setText("Profile \uD83E\uDDD1\u200D\uD83D\uDCBB");
@@ -78,7 +78,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                     }else if (text.equals("/help")){
                         SendMessage sendMessage = new SendMessage();
                         sendMessage.setText("https://telegra.ph/PDF-maker-bot--PDF-file-qollanmasi-12-05");
-                        sendMessage.setChatId(message.getChatId());
+                        sendMessage.setChatId(message.getChatId().toString());
                         execute(sendMessage);
                     }else {
                         String botState = userWithChatId.getBotState();
@@ -88,9 +88,9 @@ public class UpdatesController extends TelegramLongPollingBot {
                                         || text.equals("ПДФ генерация \uD83D\uDCD5")) {
                                     SendChatAction sendChatAction = new SendChatAction();
                                     sendChatAction.setAction(ActionType.TYPING);
-                                    sendChatAction.setChatId(message.getChatId());
+                                    sendChatAction.setChatId(message.getChatId().toString());
                                     SendMessage sendMessage = MessageService.askPhoto(update);
-                                    sendMessage.setReplyMarkup(new ReplyKeyboardRemove());
+                                    sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));
                                     Message executed = execute(sendMessage);
 
                                 }
@@ -98,8 +98,8 @@ public class UpdatesController extends TelegramLongPollingBot {
                             } else {
                                 SendChatAction sendChatAction = new SendChatAction();
                                 sendChatAction.setAction(ActionType.TYPING);
-                                sendChatAction.setChatId(message.getChatId());
-                                SendMessage sendMessage = new SendMessage(message.getChatId(), userWithChatId.getLanguageUser().name().equals(Language.UZBEK.name()) ? "Iltimos /start buyrug'ini qayta jo'nating" :
+                                sendChatAction.setChatId(message.getChatId().toString());
+                                SendMessage sendMessage = new SendMessage(message.getChatId().toString(), userWithChatId.getLanguageUser().name().equals(Language.UZBEK.name()) ? "Iltimos /start buyrug'ini qayta jo'nating" :
                                         userWithChatId.getLanguageUser().name().equals(Language.ENGLISH.name()) ? "Please send /start to use this bot" : "Отправьте команду перезапуска /start");
 
                                 execute(sendMessage);
@@ -108,8 +108,8 @@ public class UpdatesController extends TelegramLongPollingBot {
                         } else {
                             SendChatAction sendChatAction = new SendChatAction();
                             sendChatAction.setAction(ActionType.TYPING);
-                            sendChatAction.setChatId(message.getChatId());
-                            SendMessage sendMessage = new SendMessage(message.getChatId(), userWithChatId.getLanguageUser().name().equals(Language.UZBEK.name()) ? "Iltimos /start buyrug'ini qayta jo'nating" :
+                            sendChatAction.setChatId(message.getChatId().toString());
+                            SendMessage sendMessage = new SendMessage(message.getChatId().toString(), userWithChatId.getLanguageUser().name().equals(Language.UZBEK.name()) ? "Iltimos /start buyrug'ini qayta jo'nating" :
                                     userWithChatId.getLanguageUser().name().equals(Language.ENGLISH.name()) ? "Please send /start to use this bot" : "Отправьте команду перезапуска /start");
                             DatabaseService.setBotState(update, BotState.START);
                             execute(sendMessage);
@@ -127,13 +127,13 @@ public class UpdatesController extends TelegramLongPollingBot {
                     if (userFromDb.getBotState().equals(BotState.GETPHOTO)) {
                         SendChatAction sendChatAction = new SendChatAction();
                         sendChatAction.setAction(ActionType.TYPING);
-                        sendChatAction.setChatId(message.getChatId());
+                        sendChatAction.setChatId(message.getChatId().toString());
 
                         SendMessage sendMessage = new SendMessage();
-                        sendMessage.setChatId(MessageService.getChatId(update).getChatId());
+                        sendMessage.setChatId(MessageService.getChatId(update).getChatId().toString());
                         sendMessage.setReplyToMessageId(message.getMessageId());
                         sendMessage.setText(userWithChatId.getLanguageUser().name().equals(Language.UZBEK.name())?"Rasm qabul qilindi , Generate orqali pdf ni qabul qilib olishingiz mumkin":
-                                userWithChatId.getLanguageUser().name().equals(Language.ENGLISH.name())?"Photo haas been saved , You can receive pdf file by pressing Generae button ":"Изображение сделано, вы можете скачать pdf, используя кнопку Generate.\n");
+                                userWithChatId.getLanguageUser().name().equals(Language.ENGLISH.name())?"Photo haas been saved , You can receive pdf file by pressing Generate button ":"Изображение сделано, вы можете скачать pdf, используя кнопку генерировать.\n");
                         sendMessage.setReplyMarkup(FramesController.photoBottomButton(userWithChatId.getLanguageUser(),photos.get(3).getFileUniqueId()));
                         execute(sendMessage);
 
@@ -169,6 +169,12 @@ public class UpdatesController extends TelegramLongPollingBot {
                     execute(MessageService.getOptionsKeyboard(update, Language.UZBEK));
                     DatabaseService.setBotState(update, BotState.GETPHOTO);
                 }else if (data.startsWith("generate")){
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }
+                    });
                     String botStateNew = DatabaseService.getBotState(update);
                     if (botStateNew.equals(BotState.GETPHOTO)){
 
@@ -189,19 +195,22 @@ public class UpdatesController extends TelegramLongPollingBot {
                                     String filePath = executed.getFilePath();
                                     getFilePathsUrls.add(filePath);
                                 }
-                                SendChatAction sendChatAction = new SendChatAction().setAction(ActionType.UPLOADDOCUMENT).setChatId(chatId);
+                                SendChatAction sendChatAction = new SendChatAction();
+                                sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
+                                sendChatAction.setChatId(chatId.toString());
                                 execute(sendChatAction);
                                 execute(sendChatAction);
                                 PDFGenerator pdfGenerator = new PDFGenerator();
                                 pdfGenerator.generatePDF(getFilePathsUrls,update.getCallbackQuery().getMessage().getChatId());
                             }
 
-
                             SendDocument sendDocument = new SendDocument();
-                            sendDocument.setChatId(update.getCallbackQuery().getMessage().getChatId());
-                            sendDocument.setCaption(userLanguage.name().equals(Language.UZBEK.name())?"PDF file tayyor ! Botimizni do'slaringizga ham ulashing":userLanguage.name().equals(Language.ENGLISH.name())?
-                                    "PDF is ready ! If you like the bot, Please share to your friends":"PDF готов, если вам нравится наш бот, поделитесь им с друзьями");
-                            sendDocument.setDocument(new java.io.File("src/main/resources/"+chatId+".pdf"));
+                            sendDocument.setChatId(update.getCallbackQuery().getMessage().getChatId().toString());
+                            sendDocument.setCaption(userLanguage.name().equals(Language.UZBEK.name())?"PDF file tayyor ! Botimizni do'slaringizga ham ulashing @pdfdocsbot":userLanguage.name().equals(Language.ENGLISH.name())?
+                                    "PDF is ready ! If you like the bot, Please share to your friends @pdfdocsbot":"PDF готов, если вам нравится наш бот, поделитесь им с друзьями @pdfdocsbot");
+                            InputFile inputFile = new InputFile();
+                            inputFile.setMedia(new java.io.File("src/main/resources/"+chatId+".pdf"));
+                            sendDocument.setDocument(inputFile);
                             sendDocument.setReplyToMessageId(update.getCallbackQuery().getMessage().getMessageId());
                             execute(sendDocument);
                             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -234,9 +243,10 @@ public class UpdatesController extends TelegramLongPollingBot {
                 }else if (data.startsWith("delete")){
                     List<List<PhotoSize>> lists = map.get(update.getCallbackQuery().getMessage().getChatId());
                     lists.removeIf(photoSizes -> data.endsWith(photoSizes.get(3).getFileUniqueId()));
-                    EditMessageText editMessageText = new EditMessageText()
-                            .setChatId(update.getCallbackQuery().getMessage().getChatId())
-                            .setText("❌❌❌").setMessageId(update.getCallbackQuery().getMessage().getMessageId());
+                    EditMessageText editMessageText = new EditMessageText();
+                            editMessageText.setChatId(update.getCallbackQuery().getMessage().getChatId().toString());
+                            editMessageText.setText("❌❌❌");
+                            editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
                     execute(editMessageText);
                 }
             }
@@ -256,7 +266,7 @@ public class UpdatesController extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "";
+        return "@pdfdocsbot";
     }
 
     @Override

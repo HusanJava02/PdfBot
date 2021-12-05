@@ -16,13 +16,15 @@ import java.util.List;
 
 public class FramesController {
     public static InlineKeyboardMarkup makeButtonLanguage() {
-        InlineKeyboardButton uzbutton = new InlineKeyboardButton()
-                .setText("O'zbekcha \uD83C\uDDFA\uD83C\uDDFF")
-                .setCallbackData(Language.UZBEK.name());
-        InlineKeyboardButton rusButton = new InlineKeyboardButton()
-                .setText("Pусский \uD83C\uDDF7\uD83C\uDDFA").setCallbackData(Language.RUS.name());
-        InlineKeyboardButton engButton = new InlineKeyboardButton()
-                .setText("English \uD83C\uDDFA\uD83C\uDDF8").setCallbackData(Language.ENGLISH.name());
+        InlineKeyboardButton uzbutton = new InlineKeyboardButton();
+        uzbutton.setText("O'zbekcha \uD83C\uDDFA\uD83C\uDDFF");
+        uzbutton.setCallbackData(Language.UZBEK.name());
+        InlineKeyboardButton rusButton = new InlineKeyboardButton();
+        rusButton.setText("Pусский \uD83C\uDDF7\uD83C\uDDFA");
+        rusButton.setCallbackData(Language.RUS.name());
+        InlineKeyboardButton engButton = new InlineKeyboardButton();
+        engButton.setText("English \uD83C\uDDFA\uD83C\uDDF8");
+        engButton.setCallbackData(Language.ENGLISH.name());
 
         List<InlineKeyboardButton> langList = new ArrayList<>(Arrays.asList(uzbutton, rusButton, engButton));
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();

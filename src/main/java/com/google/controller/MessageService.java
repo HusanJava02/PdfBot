@@ -30,11 +30,11 @@ public class MessageService {
 
             case ENGLISH:
                 sendMessage.setText("<b>Hi</b> , This bot helps you for media processing that can work with pdf documents\n\n" +
-                "You can get more information through /help,\n\nYou can easily make a pdf with this bot so press button <b>PDF Generator</b>");
+                "You can get more information with /help\n\nYou can easily make a pdf with this bot so press button <b>PDF Generator</b>");
                 break;
         }
         sendMessage.setParseMode(ParseMode.HTML);
-        sendMessage.setChatId(result.getChatId());
+        sendMessage.setChatId(result.getChatId().toString());
         sendMessage.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
         return sendMessage;
     }
@@ -58,20 +58,20 @@ public class MessageService {
 
             case ENGLISH:
                 sendMessage.setText("<b>Hi</b> This bot helps you for media processing that can work with pdf documents\n\n" +
-                        "You can get more information through /help\n\nYou can easily make a pdf with this bot so press button <b>PDF Generator</b>");
+                        "You can get more information with /help\n\nYou can easily make a pdf with this bot so press button <b>PDF Generator</b>");
                 sendMessage.setReplyMarkup(FramesController.optionsButton(Language.ENGLISH));
 
                 break;
         }
         sendMessage.setParseMode(ParseMode.HTML);
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        sendMessage.setChatId(result.getChatId());
+        sendMessage.setChatId(result.getChatId().toString());
         DatabaseService.setBotState(update,BotState.GETPHOTO);
         return sendMessage;
     }
     public static SendMessage chooseLang(Update update){
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(update.getMessage().getChatId());
+        sendMessage.setChatId(update.getMessage().getChatId().toString());
         StringBuilder stringBuilder = new StringBuilder();
         String firstName = update.getMessage().getFrom().getFirstName();
         stringBuilder.append("Salom <b>"+firstName+"</b> Til tanlang \uD83C\uDDFA\uD83C\uDDFF").append(System.lineSeparator()).append("Привет <b>"+firstName+"</b> Выберите свой язык \uD83C\uDDF7\uD83C\uDDFA")
@@ -100,7 +100,7 @@ public class MessageService {
         Result chatId = getChatId(update);
         ReplyKeyboardMarkup replyKeyboardMarkup = FramesController.optionsButton(language);
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId.getChatId());
+        sendMessage.setChatId(chatId.getChatId().toString());
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
         if (language.equals(Language.UZBEK))
             sendMessage.setText("Tanlang \uD83D\uDC47");
@@ -112,7 +112,8 @@ public class MessageService {
 
     public static SendMessage stikerBot(Update update) {
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setText("\uD83D\uDDC2").setChatId(update.getMessage().getChatId());
+        sendMessage.setText("\uD83D\uDDC2");
+        sendMessage.setChatId(update.getMessage().getChatId().toString());
         return sendMessage;
     }
 
@@ -122,7 +123,7 @@ public class MessageService {
         Result result = MessageService.getChatId(update);
         SendMessage sendMessage = new SendMessage();
         boolean b = DatabaseService.setBotState(update, BotState.GETPHOTO);
-        sendMessage.setChatId(result.getChatId());
+        sendMessage.setChatId(result.getChatId().toString());
         if (!b){
             Language userLanguage = DatabaseService.getUserLanguage(update);
             switch(userLanguage){

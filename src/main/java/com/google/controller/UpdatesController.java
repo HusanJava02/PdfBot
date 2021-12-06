@@ -244,7 +244,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                                     sendDocument.setCaption(userLanguage.name().equals(Language.UZBEK.name()) ? "PDF file tayyor ! Botimizni do'slaringizga ham ulashing @pdfdocsbot" : userLanguage.name().equals(Language.ENGLISH.name()) ?
                                             "PDF is ready ! If you like the bot, Please share to your friends @pdfdocsbot" : "PDF готов, если вам нравится наш бот, поделитесь им с друзьями @pdfdocsbot");
                                     InputFile inputFile = new InputFile();
-                                    inputFile.setMedia(new java.io.File("src/main/resources/" + chatId + ".pdf"));
+                                    inputFile.setMedia(new java.io.File("src/main/java/PDFS/" + chatId + ".pdf"));
                                     sendDocument.setDocument(inputFile);
                                     sendDocument.setReplyToMessageId(update.getCallbackQuery().getMessage().getMessageId());
                                     execute(sendDocument);
@@ -257,7 +257,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                                     col.add(buttons);
                                     inlineKeyboardMarkup.setKeyboard(col);
                                     sendDocument.setReplyMarkup(inlineKeyboardMarkup);
-                                    java.io.File file = new java.io.File("src/main/resources/" + chatId + ".pdf");
+                                    java.io.File file = new java.io.File("src/main/java/PDFS/" + chatId + ".pdf");
                                     if (file.delete()) {
                                         System.out.println("deleted");
                                     }
@@ -299,7 +299,7 @@ public class UpdatesController extends TelegramLongPollingBot {
 
             public void deletePhotos(Long chatId, int size) {
                 for (int i = 0; i < size; i++) {
-                    java.io.File deletePhotoFile = new java.io.File("src/main/resources/images/" + chatId + "_" + i + ".jpg");
+                    java.io.File deletePhotoFile = new java.io.File("src/main/java/images/" + chatId + "_" + i + ".jpg");
                     if (deletePhotoFile.exists()) {
                         boolean delete = deletePhotoFile.delete();
                     }

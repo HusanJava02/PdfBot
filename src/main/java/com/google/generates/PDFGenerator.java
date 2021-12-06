@@ -30,11 +30,11 @@ public class PDFGenerator {
 
     public void generate(int size, Long chatId) throws DocumentException, IOException {
         Document document = new Document();
-        PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream("src/main/resources/" + chatId + ".pdf"));
+        PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream("src/main/java/PDFS/" + chatId + ".pdf"));
         document.open();
         document.setPageCount(size);
         for (int i = 0; i < size; i++) {
-            Image image = Image.getInstance("src/main/resources/images/" + chatId + "_" + i + ".jpg");
+            Image image = Image.getInstance("src/main/java/images/" + chatId + "_" + i + ".jpg");
             image.scaleToFit(new Rectangle(image.getWidth(), image.getHeight()));
             image.setAbsolutePosition(0, 0);
             document.setPageSize(new Rectangle(image.getWidth(), image.getHeight()));
@@ -50,7 +50,7 @@ public class PDFGenerator {
         URL imageUrl = new URL(url);
         URLConnection urlConnection = imageUrl.openConnection();
         InputStream inputStream = urlConnection.getInputStream();
-        Path path = Paths.get("src/main/resources/images/" + chatId + "_" + which + ".jpg");
+        Path path = Paths.get("src/main/java/images/" + chatId + "_" + which + ".jpg");
         Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
     }
 

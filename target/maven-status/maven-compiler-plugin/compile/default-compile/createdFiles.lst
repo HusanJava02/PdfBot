@@ -1,0 +1,15 @@
+com\google\enums\Language.class
+com\google\init\MainInitializer.class
+com\google\controller\UpdatesController.class
+com\google\services\DatabaseService.class
+com\google\controller\MessageService.class
+com\google\controller\SubscriberController.class
+com\google\model\ChannelTg.class
+com\google\controller\MessageService$1.class
+com\google\Frames\FramesController$1.class
+com\google\templates\Result.class
+com\google\templates\BotState.class
+com\google\controller\UpdatesController$1.class
+com\google\model\Users.class
+com\google\Frames\FramesController.class
+com\google\generates\PDFGenerator.class

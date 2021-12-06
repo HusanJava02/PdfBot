@@ -7,6 +7,7 @@ import com.google.services.DatabaseService;
 import com.google.templates.BotState;
 import com.google.templates.Result;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -143,5 +144,31 @@ public class MessageService {
             sendMessage.setText("Xatolik yuz berdi \uD83D\uDE2C iltimos /start buyrug'ini qayta jo'nating");
             return sendMessage;
         }
+    }
+
+    public static SendMessage maxFileSizeOutOfMessage(Update update,Language language) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(update.getMessage().getChatId().toString());
+        sendMessage.setText(language.name().equals(Language.ENGLISH.name())?"Max file size has exceeded,You can sen less than 10 MB":language.name().equals(Language.UZBEK.name())?"Maksimal fayl xajmi chegaradan oshib ketti , Siz faqatgina 10MB dan kam filelarni yuklay olasiz":"Превышен максимальный размер файла, вы можете загружать только файлы размером менее 10 МБ");
+        sendMessage.setReplyToMessageId(update.getMessage().getMessageId());
+        return sendMessage;
+
+    }
+
+    public static SendMessage notAllowedFileFormat(Update update, Language userLanguage) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(update.getMessage().getChatId().toString());
+        sendMessage.setText(userLanguage.name().equals(Language.ENGLISH.name())?"File format not allowed ❌":userLanguage.name().equals(Language.UZBEK.name())?"Faylingiz xato formatda iltimos file rasm ekanligiga ishonch hosil qiling ❌":"Пожалуйста, убедитесь, что ваш файл имеет неправильный формат файла изображения ❌");
+        sendMessage.setReplyToMessageId(update.getMessage().getMessageId());
+        return sendMessage;
+    }
+
+    public static EditMessageText editSendedFile(Update update, Language userLanguage) {
+        EditMessageText editMessageText = new EditMessageText();
+        editMessageText.setChatId(update.getCallbackQuery().getMessage().getChatId().toString());
+        editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
+        editMessageText.setText(userLanguage.name().equals(Language.ENGLISH.name())?"Your file in a processing ♻️":userLanguage.name().equals(Language.UZBEK.name())?
+                "Sizning faylingizga ishlov berilmoqda ♻️":"Ваш файл находится в обработке ♻️");
+        return editMessageText;
     }
 }

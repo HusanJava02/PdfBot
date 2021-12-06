@@ -60,8 +60,8 @@
                     <assembleDirectory>target</assembleDirectory>
                     <programs>
                         <program>
-                            <mainClass>MainInitializer</mainClass>
-                            <name>Converter_bot</name>
+                            <mainClass>com.google.init.MainInitializer</mainClass>
+                            <name>Telegram-bot-Compressor</name>
                         </program>
                     </programs>
                 </configuration>

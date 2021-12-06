@@ -22,6 +22,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class UpdatesController extends TelegramLongPollingBot {
     static final String apiUrl = "https://api.telegram.org/bot1762336264:AAGz9-95sFr2BtygeUuPtwjb4GeSlxBBjKk/getFile?file_id=";
@@ -279,12 +280,16 @@ public class UpdatesController extends TelegramLongPollingBot {
                             }
                         } else if (data.startsWith("delete")) {
                             List<List<PhotoSize>> lists = photosMap.get(update.getCallbackQuery().getMessage().getChatId());
-                            lists.removeIf(photoSizes -> data.endsWith(photoSizes.get(3).getFileUniqueId()));
-                            EditMessageText editMessageText = new EditMessageText();
-                            editMessageText.setChatId(update.getCallbackQuery().getMessage().getChatId().toString());
-                            editMessageText.setText("❌❌❌");
-                            editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
-                            execute(editMessageText);
+                            if (lists != null){
+
+                                lists.removeIf(photoSizes -> data.endsWith(photoSizes.get(3).getFileUniqueId()));
+                                execute(editMessageTextRemove(update));
+                            }
+                            List<Document> documents = documentMap.get(update.getCallbackQuery().getMessage().getChatId());
+                            if (documents != null){
+                                documents.removeIf(document -> data.endsWith(document.getFileUniqueId()));
+                                execute(editMessageTextRemove(update));
+                            }
                         }
                     }
                 } catch (TelegramApiException e) {
@@ -304,6 +309,13 @@ public class UpdatesController extends TelegramLongPollingBot {
 
         });
         thread.start();
+    }
+    public EditMessageText editMessageTextRemove(Update update){
+        EditMessageText editMessageText = new EditMessageText();
+        editMessageText.setChatId(update.getCallbackQuery().getMessage().getChatId().toString());
+        editMessageText.setText("❌❌❌");
+        editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
+        return editMessageText;
     }
 
 

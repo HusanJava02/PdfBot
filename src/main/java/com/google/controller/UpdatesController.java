@@ -83,8 +83,11 @@ public class UpdatesController extends TelegramLongPollingBot {
                         execute(sendMessage);
                     } else {
                         String botState = userWithChatId.getBotState();
+                        System.out.println(update.getMessage().getChatId()+" "+botState);
                         if (botState != null) {
+                            System.out.println(update.getMessage().getChatId()+" "+botState);
                             if (botState.equals(BotState.GETPHOTO)) {
+                                System.out.println(update.getMessage().getChatId()+" "+botState);
                                 if (text.equals("PDF Generation \uD83D\uDCD5") || text.equals("PDF yaratish \uD83D\uDCD5")
                                         || text.equals("ПДФ генерация \uD83D\uDCD5")) {
                                     SendChatAction sendChatAction = new SendChatAction();
@@ -93,7 +96,6 @@ public class UpdatesController extends TelegramLongPollingBot {
                                     SendMessage sendMessage = MessageService.askPhoto(update);
                                     sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));
                                     Message executed = execute(sendMessage);
-
                                 }
 
                             } else {

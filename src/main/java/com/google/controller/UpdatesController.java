@@ -231,7 +231,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                                             String filePath = executed.getFilePath();
                                             getFilePathsUrls.add(filePath);
                                         }
-                                        Thread.sleep(3000);
+                                        Thread.sleep(2000);
                                         SendChatAction sendChatAction = new SendChatAction();
                                         sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
                                         sendChatAction.setChatId(chatId.toString());

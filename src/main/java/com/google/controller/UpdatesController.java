@@ -32,17 +32,27 @@ public class UpdatesController extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                updateThread(update);
+            }
+        });
+        thread.start();
 
+    }
+    public void updateThread(Update update){
         try {
             if (update.hasMessage()) {
                 String botState1 = DatabaseService.getBotState(update);
                 Message message = update.getMessage();
                 System.out.println("botState1" + botState1 + " " + message.getChatId());
+
                 Users userWithChatId = DatabaseService.getUserWithChatId(update);
                 if (message.hasText()) {
                     String text = message.getText();
                     if (text.equals("/start")) {
-
+                        DatabaseService.saveLanguage(update, Language.UZBEK);
                         SendMessage stiker = MessageService.stikerBot(update);
                         if (DatabaseService.exists(message.getChatId())) {
                             SendChatAction sendChatAction = new SendChatAction();
@@ -83,11 +93,11 @@ public class UpdatesController extends TelegramLongPollingBot {
                         execute(sendMessage);
                     } else {
                         String botState = userWithChatId.getBotState();
-                        System.out.println(update.getMessage().getChatId()+" "+botState);
+                        System.out.println(update.getMessage().getChatId() + " " + botState);
                         if (botState != null) {
-                            System.out.println(update.getMessage().getChatId()+" "+botState);
+                            System.out.println(update.getMessage().getChatId() + " " + botState);
                             if (botState.equals(BotState.GETPHOTO)) {
-                                System.out.println(update.getMessage().getChatId()+" "+botState);
+                                System.out.println(update.getMessage().getChatId() + " " + botState);
                                 if (text.equals("PDF Generation \uD83D\uDCD5") || text.equals("PDF yaratish \uD83D\uDCD5")
                                         || text.equals("ПДФ генерация \uD83D\uDCD5")) {
                                     SendChatAction sendChatAction = new SendChatAction();
@@ -145,16 +155,16 @@ public class UpdatesController extends TelegramLongPollingBot {
                     if (documentMap.get(update.getMessage().getChatId()) == null) {
                         documentMap.put(update.getMessage().getChatId(), new ArrayList<>());
                     }
-                    List<Document> documents = documentMap.get(update.getMessage().getChatId());
-                    documents.add(document);
-                    documentMap.put(update.getMessage().getChatId(), documents);
                     Language userLanguage = DatabaseService.getUserLanguage(update);
                     Integer fileSize = document.getFileSize();
                     GetFile getFile = new GetFile(document.getFileId());
                     File file = execute(getFile);
                     if (file.getFilePath().endsWith(".jpg") || file.getFilePath().endsWith(".jpeg")
                             || file.getFilePath().endsWith(".png") || file.getFilePath().endsWith(".tif")) {
-                        if (fileSize < 1_024_000) {
+                        if (fileSize < 10_024_000) {
+                            List<Document> documents = documentMap.get(update.getMessage().getChatId());
+                            documents.add(document);
+                            documentMap.put(update.getMessage().getChatId(), documents);
                             SendMessage sendMessage = new SendMessage();
                             sendMessage.setChatId(MessageService.getChatId(update).getChatId().toString());
                             sendMessage.setReplyToMessageId(message.getMessageId());
@@ -172,6 +182,7 @@ public class UpdatesController extends TelegramLongPollingBot {
 
                 }
             } else if (update.hasCallbackQuery()) {
+
                 String botState = DatabaseService.getBotState(update);
                 Language userLanguage = DatabaseService.getUserLanguage(update);
                 System.out.println("botState1" + botState + " " + update.getCallbackQuery().getMessage().getChatId());
@@ -265,10 +276,10 @@ public class UpdatesController extends TelegramLongPollingBot {
                             }
 
                             if (lists != null) {
-                                deletePhotos(chatId, lists.size());
+                                deletePhotos(chatId);
                             }
                             if (documents != null) {
-                                deletePhotos(chatId, documents.size());
+                                deletePhotos(chatId);
                             }
                             photosMap.remove(update.getCallbackQuery().getMessage().getChatId());
                             documentMap.remove(update.getCallbackQuery().getMessage().getChatId());
@@ -285,7 +296,6 @@ public class UpdatesController extends TelegramLongPollingBot {
                 } else if (data.startsWith("delete")) {
                     List<List<PhotoSize>> lists = photosMap.get(update.getCallbackQuery().getMessage().getChatId());
                     if (lists != null) {
-
                         lists.removeIf(photoSizes -> data.endsWith(photoSizes.get(3).getFileUniqueId()));
                         execute(editMessageTextRemove(update));
                     }
@@ -301,18 +311,24 @@ public class UpdatesController extends TelegramLongPollingBot {
         }
     }
 
-    public void deletePhotos(Long chatId, int size) {
-        for (int i = 0; i < size; i++) {
-            java.io.File deletePhotoFile = new java.io.File("src/main/java/com/google/resources/images/" + chatId + "_" + i + ".jpg");
-            if (deletePhotoFile.exists()) {
-                boolean delete = deletePhotoFile.delete();
+    public void deletePhotos(Long chatId) {
+        java.io.File file = new java.io.File("src/main/java/com/google/resources/images/");
+        String[] list = file.list();
+        if (list != null){
+            for (String s : list) {
+                if (s.startsWith(chatId.toString())){
+                    java.io.File deletingFile = new java.io.File("src/main/java/com/google/resources/images/"+s);
+                    if (deletingFile.delete()){
+                        System.out.println("Deleted+"+s);
+                    }
+                }
             }
-
         }
+
     }
 
 
-    public EditMessageText editMessageTextRemove(Update update){
+    public EditMessageText editMessageTextRemove(Update update) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(update.getCallbackQuery().getMessage().getChatId().toString());
         editMessageText.setText("❌❌❌");
@@ -330,11 +346,17 @@ public class UpdatesController extends TelegramLongPollingBot {
     public String getBotToken() {
         return "5039461659:AAGCxFgEjUkzm4ForurJxOFNBiS4qxkJTGI";
     }
-    public SendChatAction getChatAction(Long chatId){
+
+    public SendChatAction getChatAction(Long chatId) {
         SendChatAction sendChatAction = new SendChatAction();
         sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
         sendChatAction.setChatId(chatId.toString());
         return sendChatAction;
+    }
+
+    public static void main(String[] args) {
+        java.io.File file = new java.io.File("src/main/java/com/google/resources/images/");
+        System.out.println(Arrays.asList(file.list()));
     }
 }
 

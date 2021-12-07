@@ -1,15 +1,12 @@
 package com.google.services;
 
-import com.google.controller.MessageService;
+import com.google.controller.MessageController;
 import com.google.enums.Language;
 import com.google.model.ChannelTg;
 import com.google.model.Users;
 import com.google.templates.BotState;
 import com.google.templates.Result;
-import org.apache.commons.codec.language.bm.Lang;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -147,7 +144,7 @@ public class DatabaseService {
     }
 
     public static boolean saveLanguage(Update update, Language language) {
-        Result result = MessageService.getChatId(update);
+        Result result = MessageController.getChatId(update);
         Long chatId = result.getChatId();
         try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)){
             String query = "update users set language_user=? where user_id=?";
@@ -165,7 +162,7 @@ public class DatabaseService {
     }
 
     public static Language getUserLanguage(Update update) {
-        Result result = MessageService.getChatId(update);
+        Result result = MessageController.getChatId(update);
         Long chatId = result.getChatId();
         try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)){
             PreparedStatement preparedStatement = connection.prepareStatement("select language_user from users where user_id=?");
@@ -195,7 +192,7 @@ public class DatabaseService {
     }
 
     public static String getBotState(Update update) {
-        Result result = MessageService.getChatId(update);
+        Result result = MessageController.getChatId(update);
         Long chatId = result.getChatId();
 
         try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)) {
@@ -215,7 +212,7 @@ public class DatabaseService {
         return BotState.START;
     }
     public static boolean setBotState(Update update,String botState){
-        Result result = MessageService.getChatId(update);
+        Result result = MessageController.getChatId(update);
         Long chatId = result.getChatId();
 
         try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)) {
@@ -231,7 +228,7 @@ public class DatabaseService {
         return false;
     }
     public static Users getUserWithChatId(Update update){
-        Result chatId = MessageService.getChatId(update);
+        Result chatId = MessageController.getChatId(update);
 
         try (Connection connection = DriverManager.getConnection(dataSourceUrl,userName,password)){;
             Statement statement = connection.createStatement();

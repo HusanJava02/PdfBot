@@ -7,13 +7,12 @@ import com.google.services.DatabaseService;
 import com.google.templates.BotState;
 import com.google.templates.Result;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
-import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
-public class MessageService {
+public class MessageController {
 
     public static EditMessageText getGreeting(Update update, Language language){
         Result result = getChatId(update);
@@ -94,7 +93,7 @@ public class MessageService {
         users.setChatId(update.getMessage().getChatId());
         users.setBotState(BotState.GETLANG);
         DatabaseService.saveUsers(users);
-        return MessageService.chooseLang(update);
+        return MessageController.chooseLang(update);
     }
     public static SendMessage getOptionsKeyboard(Update update,Language language){
         System.out.println(language);
@@ -121,7 +120,7 @@ public class MessageService {
 
 
     public static SendMessage askPhoto(Update update) {
-        Result result = MessageService.getChatId(update);
+        Result result = MessageController.getChatId(update);
         SendMessage sendMessage = new SendMessage();
         boolean b = DatabaseService.setBotState(update, BotState.GETPHOTO);
         sendMessage.setChatId(result.getChatId().toString());

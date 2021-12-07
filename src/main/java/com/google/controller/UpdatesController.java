@@ -22,7 +22,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Predicate;
 
 public class UpdatesController extends TelegramLongPollingBot {
     static final String apiUrl = "https://api.telegram.org/bot1762336264:AAGz9-95sFr2BtygeUuPtwjb4GeSlxBBjKk/getFile?file_id=";
@@ -55,13 +54,13 @@ public class UpdatesController extends TelegramLongPollingBot {
                     String text = message.getText();
                     if (text.equals("/start")) {
                         DatabaseService.saveLanguage(update, Language.UZBEK);
-                        SendMessage stiker = MessageService.stikerBot(update);
+                        SendMessage stiker = MessageController.stikerBot(update);
                         if (DatabaseService.exists(message.getChatId())) {
                             SendChatAction sendChatAction = new SendChatAction();
                             sendChatAction.setAction(ActionType.TYPING);
                             sendChatAction.setChatId(message.getChatId().toString());
                             Language userLanguage = DatabaseService.getUserLanguage(update);
-                            SendMessage greeting = MessageService.getGreetingWithoutUpdate(update, userLanguage);
+                            SendMessage greeting = MessageController.getGreetingWithoutUpdate(update, userLanguage);
                             execute(greeting);
 
                         } else {
@@ -70,12 +69,12 @@ public class UpdatesController extends TelegramLongPollingBot {
                             sendChatAction.setChatId(message.getChatId().toString());
                             execute(sendChatAction);
                             execute(stiker);
-                            execute(MessageService.getStart(update));
+                            execute(MessageController.getStart(update));
                         }
                     } else if (text.equals("/lang")) {
                         SendMessage sendMessage = new SendMessage();
                         sendMessage.setChatId(message.getChatId().toString());
-                        SendMessage choose = MessageService.chooseLang(update);
+                        SendMessage choose = MessageController.chooseLang(update);
                         execute(choose);
                     } else if (text.equals("/profile")) {
                         SendMessage sendMessage = new SendMessage();
@@ -105,7 +104,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                                     SendChatAction sendChatAction = new SendChatAction();
                                     sendChatAction.setAction(ActionType.TYPING);
                                     sendChatAction.setChatId(message.getChatId().toString());
-                                    SendMessage sendMessage = MessageService.askPhoto(update);
+                                    SendMessage sendMessage = MessageController.askPhoto(update);
                                     sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));
                                     Message executed = execute(sendMessage);
                                 }
@@ -145,7 +144,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                         sendChatAction.setChatId(message.getChatId().toString());
 
                         SendMessage sendMessage = new SendMessage();
-                        sendMessage.setChatId(MessageService.getChatId(update).getChatId().toString());
+                        sendMessage.setChatId(MessageController.getChatId(update).getChatId().toString());
                         sendMessage.setReplyToMessageId(message.getMessageId());
                         sendMessage.setText(userWithChatId.getLanguageUser().name().equals(Language.UZBEK.name()) ? "Rasm qabul qilindi , Generate orqali pdf ni qabul qilib olishingiz mumkin" :
                                 userWithChatId.getLanguageUser().name().equals(Language.ENGLISH.name()) ? "Photo haas been saved , You can receive pdf file by pressing Generate button " : "Изображение сделано, вы можете скачать pdf, используя кнопку генерировать.\n");
@@ -168,7 +167,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                             documents.add(document);
                             documentMap.put(update.getMessage().getChatId(), documents);
                             SendMessage sendMessage = new SendMessage();
-                            sendMessage.setChatId(MessageService.getChatId(update).getChatId().toString());
+                            sendMessage.setChatId(MessageController.getChatId(update).getChatId().toString());
                             sendMessage.setReplyToMessageId(message.getMessageId());
                             sendMessage.setText(userWithChatId.getLanguageUser().name().equals(Language.UZBEK.name()) ? "Rasm qabul qilindi , Generate orqali pdf ni qabul qilib olishingiz mumkin" :
                                     userWithChatId.getLanguageUser().name().equals(Language.ENGLISH.name()) ? "Photo haas been saved , You can receive pdf file by pressing Generate button " : "Изображение сделано, вы можете скачать pdf, используя кнопку генерировать.\n");
@@ -176,10 +175,10 @@ public class UpdatesController extends TelegramLongPollingBot {
                             execute(sendMessage);
 
                         } else {
-                            SendMessage sendMessage = MessageService.maxFileSizeOutOfMessage(update, userLanguage);
+                            SendMessage sendMessage = MessageController.maxFileSizeOutOfMessage(update, userLanguage);
                             execute(sendMessage);
                         }
-                    } else execute(MessageService.notAllowedFileFormat(update, userLanguage));
+                    } else execute(MessageController.notAllowedFileFormat(update, userLanguage));
 
 
                 }
@@ -192,27 +191,27 @@ public class UpdatesController extends TelegramLongPollingBot {
                 String data = callbackQuery.getData();
                 if (data.equals(Language.ENGLISH.name())) {
 
-                    EditMessageText start = MessageService.getGreeting(update, Language.ENGLISH);
+                    EditMessageText start = MessageController.getGreeting(update, Language.ENGLISH);
                     DatabaseService.saveLanguage(update, Language.ENGLISH);
                     execute(start);
-                    Message execute = execute(MessageService.getOptionsKeyboard(update, Language.ENGLISH));
+                    Message execute = execute(MessageController.getOptionsKeyboard(update, Language.ENGLISH));
                     DatabaseService.setBotState(update, BotState.GETPHOTO);
                 } else if (data.equals(Language.RUS.name())) {
 
-                    EditMessageText start = MessageService.getGreeting(update, Language.RUS);
+                    EditMessageText start = MessageController.getGreeting(update, Language.RUS);
                     DatabaseService.saveLanguage(update, Language.RUS);
                     execute(start);
-                    execute(MessageService.getOptionsKeyboard(update, Language.RUS));
+                    execute(MessageController.getOptionsKeyboard(update, Language.RUS));
                     DatabaseService.setBotState(update, BotState.GETPHOTO);
 
                 } else if (data.equals(Language.UZBEK.name())) {
-                    EditMessageText start = MessageService.getGreeting(update, Language.UZBEK);
+                    EditMessageText start = MessageController.getGreeting(update, Language.UZBEK);
                     DatabaseService.saveLanguage(update, Language.UZBEK);
                     execute(start);
-                    execute(MessageService.getOptionsKeyboard(update, Language.UZBEK));
+                    execute(MessageController.getOptionsKeyboard(update, Language.UZBEK));
                     DatabaseService.setBotState(update, BotState.GETPHOTO);
                 } else if (data.startsWith("generate")) {
-                    execute(MessageService.editSendedFile(update, userLanguage));
+                    execute(MessageController.editSendedFile(update, userLanguage));
                     String botStateNew = DatabaseService.getBotState(update);
                     if (botStateNew.equals(BotState.GETPHOTO)) {
                         try {
@@ -291,7 +290,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                             e.printStackTrace();
                         }
                     } else {
-                        SendMessage sendMessage = MessageService.askPhoto(update);
+                        SendMessage sendMessage = MessageController.askPhoto(update);
                         DatabaseService.setBotState(update, BotState.GETPHOTO);
                         execute(sendMessage);
                     }

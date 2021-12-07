@@ -36,9 +36,11 @@ public class UpdatesController extends TelegramLongPollingBot {
             @Override
             public void run() {
                 updateThread(update);
+
             }
         });
         thread.start();
+        System.out.println(thread.getId()+" ishladi ");
 
     }
     public void updateThread(Update update){

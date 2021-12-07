@@ -16,13 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseService {
-//    static String dataSourceUrl = "jdbc:postgresql://ec2-54-195-246-55.eu-west-1.compute.amazonaws.com:5432/d9kjl9oq1ti7hd";
-//    static String userName = "liiuljqdzabjjq";
-//    static String password = "592add3c49d278cb164fbfe13a9c9f1f4172d717908c193306c9ff283532054c";
+    static String dataSourceUrl = "jdbc:postgresql://ec2-54-195-246-55.eu-west-1.compute.amazonaws.com:5432/d9kjl9oq1ti7hd";
+    static String userName = "liiuljqdzabjjq";
+    static String password = "592add3c49d278cb164fbfe13a9c9f1f4172d717908c193306c9ff283532054c";
 
-    static String dataSourceUrl = "jdbc:postgresql://localhost:5432/Tg_bot_media";
-    static String userName = "postgres";
-    static String password = "husanboy2002";
+//    static String dataSourceUrl = "jdbc:postgresql://localhost:5432/Tg_bot_media";
+//    static String userName = "postgres";
+//    static String password = "husanboy2002";
     static {
         String createUserTable = "CREATE TABLE IF NOT EXISTS users\n" +
                 "(\n" +

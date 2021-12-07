@@ -44,9 +44,10 @@ public class DatabaseService {
                 "delete from users;";
 
 
+        Connection connection = null;
         try {
             Class.forName("org.postgresql.Driver");
-            Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password);
+            connection = DriverManager.getConnection(dataSourceUrl, userName, password);
             Statement statement = connection.createStatement();
             boolean execute = statement.execute(createUserTable);
             if (execute) {
@@ -59,13 +60,23 @@ public class DatabaseService {
             System.out.println("xatolik");
             e.printStackTrace();
         }
+        finally {
+            if (connection != null){
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
     }
 
     public static boolean saveUsers(Users users) {
+        Connection connection = null;
         try {
             Class.forName("org.postgresql.Driver");
-            Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password);
+            connection = DriverManager.getConnection(dataSourceUrl, userName, password);
             PreparedStatement preparedStatement = connection.prepareStatement("insert into  users(user_name , user_id, botstate) values (?,?,?)");
             preparedStatement.setString(1, users.getUserName());
             preparedStatement.setLong(2, users.getChatId());
@@ -77,6 +88,14 @@ public class DatabaseService {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        }finally {
+            if (connection!=null){
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return false;
     }
@@ -104,8 +123,7 @@ public class DatabaseService {
 
     public static List<ChannelTg> getChannels() {
         List<ChannelTg> channelTgList = new ArrayList<>();
-        try {
-            Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password);
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)){
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from channels");
             if (resultSet.next()) {
@@ -128,8 +146,7 @@ public class DatabaseService {
     public static boolean saveLanguage(Update update, Language english) {
         Result result = MessageService.getChatId(update);
         Long chatId = result.getChatId();
-        try {
-            Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password);
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)){
             String query = "update users set language_user=? where user_id=?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, english.name());
@@ -139,6 +156,7 @@ public class DatabaseService {
             return execute;
         } catch (SQLException e) {
             e.printStackTrace();
+
         }
         return false;
     }
@@ -146,8 +164,7 @@ public class DatabaseService {
     public static Language getUserLanguage(Update update) {
         Result result = MessageService.getChatId(update);
         Long chatId = result.getChatId();
-        try {
-            Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password);
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)){
             PreparedStatement preparedStatement = connection.prepareStatement("select language_user from users where user_id=?");
             preparedStatement.setLong(1, chatId);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -188,6 +205,7 @@ public class DatabaseService {
                 return string;
             }
 
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -212,8 +230,7 @@ public class DatabaseService {
     public static Users getUserWithChatId(Update update){
         Result chatId = MessageService.getChatId(update);
 
-        try {
-            Connection connection = DriverManager.getConnection(dataSourceUrl,userName,password);
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl,userName,password)){;
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from users where user_id=" + chatId.getChatId());
             Users users = new Users();
@@ -227,8 +244,10 @@ public class DatabaseService {
                 users.setBotState(botstate);
                 users.setLanguageUser(getFromString(langauage));
                 users.setChatId(update.getMessage().getChatId());
+                connection.close();
                 return users;
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

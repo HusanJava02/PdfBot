@@ -92,9 +92,9 @@ fi
 exec "$JAVACMD" $JAVA_OPTS \
   $EXTRA_JVM_ARGUMENTS \
   -classpath "$CLASSPATH" \
-  -Dapp.name="Converter_bot" \
+  -Dapp.name="Telegram-bot-Compressor" \
   -Dapp.pid="$$" \
   -Dapp.repo="$REPO" \
   -Dbasedir="$BASEDIR" \
-  MainInitializer \
+  com.google.init.MainInitializer \
   "$@"

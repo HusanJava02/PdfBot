@@ -231,6 +231,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                                             String filePath = executed.getFilePath();
                                             getFilePathsUrls.add(filePath);
                                         }
+                                        Thread.sleep(1000);
                                         SendChatAction sendChatAction = new SendChatAction();
                                         sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
                                         sendChatAction.setChatId(chatId.toString());
@@ -271,6 +272,8 @@ public class UpdatesController extends TelegramLongPollingBot {
                                     photosMap.remove(update.getCallbackQuery().getMessage().getChatId());
                                     documentMap.remove(update.getCallbackQuery().getMessage().getChatId());
                                 } catch (IOException | DocumentException e) {
+                                    e.printStackTrace();
+                                } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
                             } else {

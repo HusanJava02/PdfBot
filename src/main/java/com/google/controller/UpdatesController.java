@@ -70,6 +70,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                             execute(sendChatAction);
                             execute(stiker);
                             execute(MessageController.getStart(update));
+                            MessageController.newUser(update);
                         }
                     } else if (text.equals("/lang")) {
                         SendMessage sendMessage = new SendMessage();
@@ -92,7 +93,11 @@ public class UpdatesController extends TelegramLongPollingBot {
                         sendMessage.setText("https://telegra.ph/PDF-maker-bot--PDF-file-qollanmasi-12-05");
                         sendMessage.setChatId(message.getChatId().toString());
                         execute(sendMessage);
-                    } else {
+                    }else if (text.equals("/users")){
+                        SendMessage sendMessage = new SendMessage();
+                        sendMessage.setChatId(update.getMessage().getChatId().toString());
+                        sendMessage.setText("Foydalanuvchilar : "+DatabaseService.getUsersCount());
+                    }else {
                         String botState = userWithChatId.getBotState();
                         System.out.println(update.getMessage().getChatId() + " " + botState);
                         if (botState != null) {

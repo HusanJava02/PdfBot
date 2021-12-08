@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 public class MessageController {
@@ -169,5 +170,17 @@ public class MessageController {
         editMessageText.setText(userLanguage.name().equals(Language.ENGLISH.name())?"Your file in a processing ♻️":userLanguage.name().equals(Language.UZBEK.name())?
                 "Sizning faylingizga ishlov berilmoqda ♻️":"Ваш файл находится в обработке ♻️");
         return editMessageText;
+    }
+
+    public static SendMessage newUser(Update update) {
+        User from = update.getMessage().getFrom();
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId("968877318");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("name : "+from.getUserName()).append("\n").append("chat id"+from.getId()).append("\n")
+                .append("username : "+from.getUserName());
+
+        sendMessage.setText(stringBuilder.toString());
+        return sendMessage;
     }
 }

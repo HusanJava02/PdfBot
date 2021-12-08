@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseService {
-    static String dataSourceUrl = "";
-    static String userName = "";
-    static String password = "";
-
+    static String dataSourceUrl = "jdbc:postgresql://ec2-54-195-246-55.eu-west-1.compute.amazonaws.com:5432/d9kjl9oq1ti7hd";
+    static String userName = "liiuljqdzabjjq";
+    static String password = "592add3c49d278cb164fbfe13a9c9f1f4172d717908c193306c9ff283532054c";
+//postgres://liiuljqdzabjjq:592add3c49d278cb164fbfe13a9c9f1f4172d717908c193306c9ff283532054c@ec2-54-195-246-55.eu-west-1.compute.amazonaws.com:5432/d9kjl9oq1ti7hd
 //    static String dataSourceUrl = "jdbc:postgresql://localhost:5432/Tg_bot_media";
 //    static String userName = "";
 //    static String password = "";
@@ -266,4 +266,15 @@ public class DatabaseService {
     }
 
 
+    public static Long getUsersCount() {
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl,userName,password)){
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select count(user_id) from users;");
+            long aLong = resultSet.getLong(0);
+            return aLong;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0L;
+    }
 }

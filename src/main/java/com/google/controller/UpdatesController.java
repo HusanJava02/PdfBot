@@ -97,6 +97,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                         SendMessage sendMessage = new SendMessage();
                         sendMessage.setChatId(update.getMessage().getChatId().toString());
                         sendMessage.setText("Foydalanuvchilar : "+DatabaseService.getUsersCount());
+                        execute(sendMessage);
                     }else {
                         String botState = userWithChatId.getBotState();
                         System.out.println(update.getMessage().getChatId() + " " + botState);

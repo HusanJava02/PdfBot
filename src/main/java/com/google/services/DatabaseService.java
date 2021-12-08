@@ -271,7 +271,7 @@ public class DatabaseService {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select count(user_id) from users;");
             if (resultSet.next()){
-                long aLong = resultSet.getLong(0);
+                long aLong = resultSet.getLong(1);
 
                 return aLong;
             }

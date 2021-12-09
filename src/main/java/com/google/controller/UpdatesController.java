@@ -160,9 +160,6 @@ public class UpdatesController extends TelegramLongPollingBot {
                     }
                 } else if (update.getMessage().hasDocument()) {
                     Document document = update.getMessage().getDocument();
-                    if (documentMap.get(update.getMessage().getChatId()) == null) {
-                        documentMap.put(update.getMessage().getChatId(), new ArrayList<>());
-                    }
                     Language userLanguage = DatabaseService.getUserLanguage(update);
                     Integer fileSize = document.getFileSize();
                     GetFile getFile = new GetFile(document.getFileId());
@@ -170,6 +167,9 @@ public class UpdatesController extends TelegramLongPollingBot {
                     if (file.getFilePath().endsWith(".jpg") || file.getFilePath().endsWith(".jpeg")
                             || file.getFilePath().endsWith(".png") || file.getFilePath().endsWith(".tif")) {
                         if (fileSize < 10_024_000) {
+                            if (documentMap.get(update.getMessage().getChatId()) == null) {
+                                documentMap.put(update.getMessage().getChatId(), new ArrayList<>());
+                            }
                             List<Document> documents = documentMap.get(update.getMessage().getChatId());
                             documents.add(document);
                             documentMap.put(update.getMessage().getChatId(), documents);

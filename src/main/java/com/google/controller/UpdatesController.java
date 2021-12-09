@@ -154,7 +154,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                         sendMessage.setReplyToMessageId(message.getMessageId());
                         sendMessage.setText(userWithChatId.getLanguageUser().name().equals(Language.UZBEK.name()) ? "Rasm qabul qilindi , Generate orqali pdf ni qabul qilib olishingiz mumkin" :
                                 userWithChatId.getLanguageUser().name().equals(Language.ENGLISH.name()) ? "Photo haas been saved , You can receive pdf file by pressing Generate button " : "Изображение сделано, вы можете скачать pdf, используя кнопку генерировать.\n");
-                        sendMessage.setReplyMarkup(FramesController.photoBottomButton(userWithChatId.getLanguageUser(), photos.get(3).getFileUniqueId()));
+                        sendMessage.setReplyMarkup(FramesController.photoBottomButton(userWithChatId.getLanguageUser(), photos.get(photos.size()-1).getFileUniqueId()));
                         execute(sendMessage);
                     }
                 } else if (update.getMessage().hasDocument()) {
@@ -231,6 +231,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                                     File executedFile = execute(getFile);
                                     getFilePathsUrls.add(executedFile.getFilePath());
                                 }
+                                Thread.sleep(2000);
                                 SendChatAction sendChatAction = new SendChatAction();
                                 sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
                                 sendChatAction.setChatId(chatId.toString());
@@ -239,13 +240,12 @@ public class UpdatesController extends TelegramLongPollingBot {
                                 pdfGenerator.generatePDF(getFilePathsUrls, update.getCallbackQuery().getMessage().getChatId());
 
                             }
-
                             if (lists != null) {
                                 for (List<PhotoSize> list : lists) {
-                                    System.out.println(apiUrl + list.get(3).getFileId());
+                                    System.out.println(apiUrl + list.get(list.size()-1).getFileId());
                                     GetFile getFile = new GetFile();
                                     System.out.println(list);
-                                    getFile.setFileId(list.get(3).getFileId());
+                                    getFile.setFileId(list.get(list.size()-1).getFileId());
                                     File executed = execute(getFile);
                                     String filePath = executed.getFilePath();
                                     getFilePathsUrls.add(filePath);
@@ -257,6 +257,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                                 execute(sendChatAction);
                                 PDFGenerator pdfGenerator = new PDFGenerator();
                                 pdfGenerator.generatePDF(getFilePathsUrls, update.getCallbackQuery().getMessage().getChatId());
+
                             }
 
                             SendDocument sendDocument = new SendDocument();
@@ -290,10 +291,11 @@ public class UpdatesController extends TelegramLongPollingBot {
                             }
                             photosMap.remove(update.getCallbackQuery().getMessage().getChatId());
                             documentMap.remove(update.getCallbackQuery().getMessage().getChatId());
-                        } catch (IOException | DocumentException e) {
+                        } catch (IOException | DocumentException | InterruptedException e) {
                             e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            photosMap.remove(update.getCallbackQuery().getMessage().getChatId());
+                            documentMap.remove(update.getCallbackQuery().getMessage().getChatId());
+
                         }
                     } else {
                         SendMessage sendMessage = MessageController.askPhoto(update);
@@ -303,7 +305,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                 } else if (data.startsWith("delete")) {
                     List<List<PhotoSize>> lists = photosMap.get(update.getCallbackQuery().getMessage().getChatId());
                     if (lists != null) {
-                        lists.removeIf(photoSizes -> data.endsWith(photoSizes.get(3).getFileUniqueId()));
+                        lists.removeIf(photoSizes -> data.endsWith(photoSizes.get(photoSizes.size()-1).getFileUniqueId()));
                         execute(editMessageTextRemove(update));
                     }
                     List<Document> documents = documentMap.get(update.getCallbackQuery().getMessage().getChatId());
@@ -315,6 +317,8 @@ public class UpdatesController extends TelegramLongPollingBot {
             }
         } catch (TelegramApiException e) {
             e.printStackTrace();
+            photosMap.remove(MessageController.getChatId(update).getChatId());
+            documentMap.remove(MessageController.getChatId(update).getChatId());
         }
     }
 

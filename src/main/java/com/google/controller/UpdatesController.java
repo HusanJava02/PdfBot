@@ -70,7 +70,8 @@ public class UpdatesController extends TelegramLongPollingBot {
                             execute(sendChatAction);
                             execute(stiker);
                             execute(MessageController.getStart(update));
-                            MessageController.newUser(update);
+                            SendMessage sendMessage = MessageController.newUser(update);
+                            execute(sendMessage);
                         }
                     } else if (text.equals("/lang")) {
                         SendMessage sendMessage = new SendMessage();
@@ -295,6 +296,12 @@ public class UpdatesController extends TelegramLongPollingBot {
                             e.printStackTrace();
                             photosMap.remove(update.getCallbackQuery().getMessage().getChatId());
                             documentMap.remove(update.getCallbackQuery().getMessage().getChatId());
+                            String s = e.toString();
+                            try {
+                                execute(new SendMessage("968877318",s));
+                            } catch (TelegramApiException telegramApiException) {
+                                telegramApiException.printStackTrace();
+                            }
 
                         }
                     } else {
@@ -317,6 +324,12 @@ public class UpdatesController extends TelegramLongPollingBot {
             }
         } catch (TelegramApiException e) {
             e.printStackTrace();
+            String s = e.toString();
+            try {
+                execute(new SendMessage("968877318",s));
+            } catch (TelegramApiException telegramApiException) {
+                telegramApiException.printStackTrace();
+            }
             photosMap.remove(MessageController.getChatId(update).getChatId());
             documentMap.remove(MessageController.getChatId(update).getChatId());
         }
@@ -365,9 +378,6 @@ public class UpdatesController extends TelegramLongPollingBot {
         return sendChatAction;
     }
 
-    public static void main(String[] args) {
-        java.io.File file = new java.io.File("src/main/java/com/google/resources/images/");
-        System.out.println(Arrays.asList(file.list()));
-    }
+
 }
 

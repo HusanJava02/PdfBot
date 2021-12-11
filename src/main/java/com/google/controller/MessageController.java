@@ -164,9 +164,16 @@ public class MessageController {
     }
 
     public static EditMessageText editSendedFile(Update update, Language userLanguage) {
+        Integer messageId;
+        if (update.hasMessage()){
+            messageId = update.getMessage().getMessageId();
+        }else {
+            messageId = update.getCallbackQuery().getMessage().getMessageId();
+        }
+        Result chatId = MessageController.getChatId(update);
         EditMessageText editMessageText = new EditMessageText();
-        editMessageText.setChatId(update.getCallbackQuery().getMessage().getChatId().toString());
-        editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
+        editMessageText.setChatId(chatId.getChatId().toString());
+        editMessageText.setMessageId(messageId);
         editMessageText.setText(userLanguage.name().equals(Language.ENGLISH.name())?"Your file in a processing ♻️":userLanguage.name().equals(Language.UZBEK.name())?
                 "Sizning faylingizga ishlov berilmoqda ♻️":"Ваш файл находится в обработке ♻️");
         return editMessageText;

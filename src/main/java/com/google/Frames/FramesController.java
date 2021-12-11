@@ -69,12 +69,20 @@ public class FramesController {
 
 
         List<InlineKeyboardButton> buttons = new ArrayList<>();
-        buttons.add(generateButton);
         buttons.add(deleteButton);
         List<List<InlineKeyboardButton>> column = new ArrayList<>();
         column.add(buttons);
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         inlineKeyboardMarkup.setKeyboard(column);
         return inlineKeyboardMarkup;
+    }
+
+    public static ReplyKeyboardMarkup makeGenerateKeyboardButton() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        KeyboardRow keyboardRow = new KeyboardRow();
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        keyboardRow.add("Generate \uD83D\uDDC2");
+        replyKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRow));
+        return replyKeyboardMarkup;
     }
 }

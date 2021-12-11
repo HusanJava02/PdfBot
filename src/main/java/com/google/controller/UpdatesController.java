@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -39,10 +40,11 @@ public class UpdatesController extends TelegramLongPollingBot {
             }
         });
         thread.start();
-        System.out.println(thread.getId()+" ishladi ");
+        System.out.println(thread.getId() + " ishladi ");
 
     }
-    public void updateThread(Update update){
+
+    public void updateThread(Update update) {
         try {
             if (update.hasMessage()) {
                 String botState1 = DatabaseService.getBotState(update);
@@ -94,12 +96,12 @@ public class UpdatesController extends TelegramLongPollingBot {
                         sendMessage.setText("https://telegra.ph/PDF-maker-bot--PDF-file-qollanmasi-12-05");
                         sendMessage.setChatId(message.getChatId().toString());
                         execute(sendMessage);
-                    }else if (text.equals("/users")){
+                    } else if (text.equals("/users")) {
                         SendMessage sendMessage = new SendMessage();
                         sendMessage.setChatId(update.getMessage().getChatId().toString());
-                        sendMessage.setText("Foydalanuvchilar : "+DatabaseService.getUsersCount());
+                        sendMessage.setText("Foydalanuvchilar : " + DatabaseService.getUsersCount());
                         execute(sendMessage);
-                    }else {
+                    } else {
                         String botState = userWithChatId.getBotState();
                         System.out.println(update.getMessage().getChatId() + " " + botState);
                         if (botState != null) {
@@ -114,8 +116,9 @@ public class UpdatesController extends TelegramLongPollingBot {
                                     SendMessage sendMessage = MessageController.askPhoto(update);
                                     sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));
                                     Message executed = execute(sendMessage);
+                                } else if (text.equals("Generate \uD83D\uDDC2")) {
+                                    send(update,userWithChatId.getLanguageUser());
                                 }
-
                             } else {
                                 SendChatAction sendChatAction = new SendChatAction();
                                 sendChatAction.setAction(ActionType.TYPING);
@@ -155,7 +158,8 @@ public class UpdatesController extends TelegramLongPollingBot {
                         sendMessage.setReplyToMessageId(message.getMessageId());
                         sendMessage.setText(userWithChatId.getLanguageUser().name().equals(Language.UZBEK.name()) ? "Rasm qabul qilindi , Generate orqali pdf ni qabul qilib olishingiz mumkin" :
                                 userWithChatId.getLanguageUser().name().equals(Language.ENGLISH.name()) ? "Photo haas been saved , You can receive pdf file by pressing Generate button " : "Изображение сделано, вы можете скачать pdf, используя кнопку генерировать.\n");
-                        sendMessage.setReplyMarkup(FramesController.photoBottomButton(userWithChatId.getLanguageUser(), photos.get(photos.size()-1).getFileUniqueId()));
+//                        sendMessage.setReplyMarkup(FramesController.photoBottomButton(userWithChatId.getLanguageUser(), photos.get(photos.size() - 1).getFileUniqueId()));
+                        sendMessage.setReplyMarkup(FramesController.makeGenerateKeyboardButton());
                         execute(sendMessage);
                     }
                 } else if (update.getMessage().hasDocument()) {
@@ -178,7 +182,8 @@ public class UpdatesController extends TelegramLongPollingBot {
                             sendMessage.setReplyToMessageId(message.getMessageId());
                             sendMessage.setText(userWithChatId.getLanguageUser().name().equals(Language.UZBEK.name()) ? "Rasm qabul qilindi , Generate orqali pdf ni qabul qilib olishingiz mumkin" :
                                     userWithChatId.getLanguageUser().name().equals(Language.ENGLISH.name()) ? "Photo haas been saved , You can receive pdf file by pressing Generate button " : "Изображение сделано, вы можете скачать pdf, используя кнопку генерировать.\n");
-                            sendMessage.setReplyMarkup(FramesController.photoBottomButton(userWithChatId.getLanguageUser(), document.getFileUniqueId()));
+//                            sendMessage.setReplyMarkup(FramesController.photoBottomButton(userWithChatId.getLanguageUser(), document.getFileUniqueId()));
+                            sendMessage.setReplyMarkup(FramesController.makeGenerateKeyboardButton());
                             execute(sendMessage);
 
                         } else {
@@ -217,102 +222,107 @@ public class UpdatesController extends TelegramLongPollingBot {
                     execute(start);
                     execute(MessageController.getOptionsKeyboard(update, Language.UZBEK));
                     DatabaseService.setBotState(update, BotState.GETPHOTO);
-                } else if (data.startsWith("generate")) {
-                    execute(MessageController.editSendedFile(update, userLanguage));
-                    String botStateNew = DatabaseService.getBotState(update);
-                    if (botStateNew.equals(BotState.GETPHOTO)) {
-                        try {
-                            List<String> getFilePathsUrls = new ArrayList<>();
-                            Long chatId = update.getCallbackQuery().getMessage().getChatId();
-                            List<List<PhotoSize>> lists = photosMap.get(chatId);
-                            List<Document> documents = documentMap.get(chatId);
-                            if (documents != null) {
-                                for (Document document : documents) {
-                                    GetFile getFile = new GetFile(document.getFileId());
-                                    File executedFile = execute(getFile);
-                                    getFilePathsUrls.add(executedFile.getFilePath());
-                                }
-                                Thread.sleep(2000);
-                                SendChatAction sendChatAction = new SendChatAction();
-                                sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
-                                sendChatAction.setChatId(chatId.toString());
-                                execute(sendChatAction);
-                                PDFGenerator pdfGenerator = new PDFGenerator();
-                                pdfGenerator.generatePDF(getFilePathsUrls, update.getCallbackQuery().getMessage().getChatId());
 
-                            }
-                            if (lists != null) {
-                                for (List<PhotoSize> list : lists) {
-                                    System.out.println(apiUrl + list.get(list.size()-1).getFileId());
-                                    GetFile getFile = new GetFile();
-                                    System.out.println(list);
-                                    getFile.setFileId(list.get(list.size()-1).getFileId());
-                                    File executed = execute(getFile);
-                                    String filePath = executed.getFilePath();
-                                    getFilePathsUrls.add(filePath);
-                                }
-                                Thread.sleep(2000);
-                                SendChatAction sendChatAction = new SendChatAction();
-                                sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
-                                sendChatAction.setChatId(chatId.toString());
-                                execute(sendChatAction);
-                                PDFGenerator pdfGenerator = new PDFGenerator();
-                                pdfGenerator.generatePDF(getFilePathsUrls, update.getCallbackQuery().getMessage().getChatId());
 
-                            }
-
-                            SendDocument sendDocument = new SendDocument();
-                            sendDocument.setChatId(update.getCallbackQuery().getMessage().getChatId().toString());
-                            sendDocument.setCaption(userLanguage.name().equals(Language.UZBEK.name()) ? "PDF file tayyor ! Botimizni do'slaringizga ham ulashing @pdfdocsbot" : userLanguage.name().equals(Language.ENGLISH.name()) ?
-                                    "PDF is ready ! If you like the bot, Please share to your friends @pdfdocsbot" : "PDF готов, если вам нравится наш бот, поделитесь им с друзьями @pdfdocsbot");
-                            InputFile inputFile = new InputFile();
-                            inputFile.setMedia(new java.io.File("src/main/java/com/google/resources/PDFS/" + chatId + ".pdf"));
-                            sendDocument.setDocument(inputFile);
-                            sendDocument.setReplyToMessageId(update.getCallbackQuery().getMessage().getMessageId());
-                            execute(sendDocument);
-                            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-                            InlineKeyboardButton keyboardButton = new InlineKeyboardButton();
-                            keyboardButton.setText("Share");
-                            keyboardButton.setSwitchInlineQueryCurrentChat("Shared message");
-                            List<InlineKeyboardButton> buttons = new ArrayList<>();
-                            List<List<InlineKeyboardButton>> col = new ArrayList<>();
-                            col.add(buttons);
-                            inlineKeyboardMarkup.setKeyboard(col);
-                            sendDocument.setReplyMarkup(inlineKeyboardMarkup);
-                            java.io.File file = new java.io.File("src/main/java/com/google/resources/PDFS/" + chatId + ".pdf");
-                            if (file.delete()) {
-                                System.out.println("deleted");
-                            }
-
-                            if (lists != null) {
-                                deletePhotos(chatId);
-                            }
-                            if (documents != null) {
-                                deletePhotos(chatId);
-                            }
-                            photosMap.remove(update.getCallbackQuery().getMessage().getChatId());
-                            documentMap.remove(update.getCallbackQuery().getMessage().getChatId());
-                        } catch (IOException | DocumentException | InterruptedException e) {
-                            e.printStackTrace();
-                            photosMap.remove(update.getCallbackQuery().getMessage().getChatId());
-                            documentMap.remove(update.getCallbackQuery().getMessage().getChatId());
-                            String s = e.toString();
-                            try {
-                                execute(new SendMessage("968877318",s));
-                            } catch (TelegramApiException telegramApiException) {
-                                telegramApiException.printStackTrace();
-                            }
-
-                        }
-                    } else {
-                        SendMessage sendMessage = MessageController.askPhoto(update);
-                        DatabaseService.setBotState(update, BotState.GETPHOTO);
-                        execute(sendMessage);
-                    }
-                } else if (data.startsWith("delete")) {
+                }
+//                else if (data.startsWith("generate")) {
+//                    execute(MessageController.editSendedFile(update, userLanguage));
+//                    String botStateNew = DatabaseService.getBotState(update);
+//                    if (botStateNew.equals(BotState.GETPHOTO)) {
+//                        try {
+//                            List<String> getFilePathsUrls = new ArrayList<>();
+//                            Long chatId = update.getCallbackQuery().getMessage().getChatId();
+//                            List<List<PhotoSize>> lists = photosMap.get(chatId);
+//                            List<Document> documents = documentMap.get(chatId);
+//                            if (documents != null) {
+//                                for (Document document : documents) {
+//                                    GetFile getFile = new GetFile(document.getFileId());
+//                                    File executedFile = execute(getFile);
+//                                    getFilePathsUrls.add(executedFile.getFilePath());
+//                                }
+//                                Thread.sleep(2000);
+//                                SendChatAction sendChatAction = new SendChatAction();
+//                                sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
+//                                sendChatAction.setChatId(chatId.toString());
+//                                execute(sendChatAction);
+//                                PDFGenerator pdfGenerator = new PDFGenerator();
+//                                pdfGenerator.generatePDF(getFilePathsUrls, update.getCallbackQuery().getMessage().getChatId());
+//
+//                            }
+//                            if (lists != null) {
+//                                for (List<PhotoSize> list : lists) {
+//                                    System.out.println(apiUrl + list.get(list.size()-1).getFileId());
+//                                    GetFile getFile = new GetFile();
+//                                    System.out.println(list);
+//                                    getFile.setFileId(list.get(list.size()-1).getFileId());
+//                                    File executed = execute(getFile);
+//                                    String filePath = executed.getFilePath();
+//                                    getFilePathsUrls.add(filePath);
+//                                }
+//                                Thread.sleep(2000);
+//                                SendChatAction sendChatAction = new SendChatAction();
+//                                sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
+//                                sendChatAction.setChatId(chatId.toString());
+//                                execute(sendChatAction);
+//                                PDFGenerator pdfGenerator = new PDFGenerator();
+//                                pdfGenerator.generatePDF(getFilePathsUrls, update.getCallbackQuery().getMessage().getChatId());
+//
+//                            }
+//
+//                            SendDocument sendDocument = new SendDocument();
+//                            sendDocument.setChatId(update.getCallbackQuery().getMessage().getChatId().toString());
+//                            sendDocument.setCaption(userLanguage.name().equals(Language.UZBEK.name()) ? "PDF file tayyor ! Botimizni do'slaringizga ham ulashing @pdfdocsbot" : userLanguage.name().equals(Language.ENGLISH.name()) ?
+//                                    "PDF is ready ! If you like the bot, Please share to your friends @pdfdocsbot" : "PDF готов, если вам нравится наш бот, поделитесь им с друзьями @pdfdocsbot");
+//                            InputFile inputFile = new InputFile();
+//                            inputFile.setMedia(new java.io.File("src/main/java/com/google/resources/PDFS/" + chatId + ".pdf"));
+//                            sendDocument.setDocument(inputFile);
+//                            sendDocument.setReplyToMessageId(update.getCallbackQuery().getMessage().getMessageId());
+//                            execute(sendDocument);
+//                            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+//                            InlineKeyboardButton keyboardButton = new InlineKeyboardButton();
+//                            keyboardButton.setText("Share");
+//                            keyboardButton.setSwitchInlineQueryCurrentChat("Shared message");
+//                            List<InlineKeyboardButton> buttons = new ArrayList<>();
+//                            List<List<InlineKeyboardButton>> col = new ArrayList<>();
+//                            col.add(buttons);
+//                            inlineKeyboardMarkup.setKeyboard(col);
+//                            sendDocument.setReplyMarkup(inlineKeyboardMarkup);
+//                            java.io.File file = new java.io.File("src/main/java/com/google/resources/PDFS/" + chatId + ".pdf");
+//                            if (file.delete()) {
+//                                System.out.println("deleted");
+//                            }
+//
+//                            if (lists != null) {
+//                                deletePhotos(chatId);
+//                            }
+//                            if (documents != null) {
+//                                deletePhotos(chatId);
+//                            }
+//                            photosMap.remove(update.getCallbackQuery().getMessage().getChatId());
+//                            documentMap.remove(update.getCallbackQuery().getMessage().getChatId());
+//                        } catch (IOException | DocumentException | InterruptedException e) {
+//                            e.printStackTrace();
+//                            photosMap.remove(update.getCallbackQuery().getMessage().getChatId());
+//                            documentMap.remove(update.getCallbackQuery().getMessage().getChatId());
+//                            String s = e.toString();
+//                            try {
+//                                execute(new SendMessage("968877318",s));
+//                            } catch (TelegramApiException telegramApiException) {
+//                                telegramApiException.printStackTrace();
+//                            }
+//
+//                        }
+//                    } else {
+//                        SendMessage sendMessage = MessageController.askPhoto(update);
+//                        DatabaseService.setBotState(update, BotState.GETPHOTO);
+//                        execute(sendMessage);
+//                    }
+//                }
+//
+                else if (data.startsWith("delete")) {
                     List<List<PhotoSize>> lists = photosMap.get(update.getCallbackQuery().getMessage().getChatId());
                     if (lists != null) {
-                        lists.removeIf(photoSizes -> data.endsWith(photoSizes.get(photoSizes.size()-1).getFileUniqueId()));
+                        lists.removeIf(photoSizes -> data.endsWith(photoSizes.get(photoSizes.size() - 1).getFileUniqueId()));
                         execute(editMessageTextRemove(update));
                     }
                     List<Document> documents = documentMap.get(update.getCallbackQuery().getMessage().getChatId());
@@ -326,7 +336,7 @@ public class UpdatesController extends TelegramLongPollingBot {
             e.printStackTrace();
             String s = e.toString();
             try {
-                execute(new SendMessage("968877318",s));
+                execute(new SendMessage("968877318", s));
             } catch (TelegramApiException telegramApiException) {
                 telegramApiException.printStackTrace();
             }
@@ -338,12 +348,12 @@ public class UpdatesController extends TelegramLongPollingBot {
     public void deletePhotos(Long chatId) {
         java.io.File file = new java.io.File("src/main/java/com/google/resources/images/");
         String[] list = file.list();
-        if (list != null){
+        if (list != null) {
             for (String s : list) {
-                if (s.startsWith(chatId.toString())){
-                    java.io.File deletingFile = new java.io.File("src/main/java/com/google/resources/images/"+s);
-                    if (deletingFile.delete()){
-                        System.out.println("Deleted+"+s);
+                if (s.startsWith(chatId.toString())) {
+                    java.io.File deletingFile = new java.io.File("src/main/java/com/google/resources/images/" + s);
+                    if (deletingFile.delete()) {
+                        System.out.println("Deleted+" + s);
                     }
                 }
             }
@@ -376,6 +386,102 @@ public class UpdatesController extends TelegramLongPollingBot {
         sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
         sendChatAction.setChatId(chatId.toString());
         return sendChatAction;
+    }
+
+    public void send(Update update, Language userLanguage) throws TelegramApiException {
+//        execute(MessageController.editSendedFile(update, userLanguage));
+        String botStateNew = DatabaseService.getBotState(update);
+        if (botStateNew.equals(BotState.GETPHOTO)) {
+            try {
+                List<String> getFilePathsUrls = new ArrayList<>();
+                Long chatId = update.getMessage().getChatId();
+                List<List<PhotoSize>> lists = photosMap.get(chatId);
+                List<Document> documents = documentMap.get(chatId);
+                if (documents != null) {
+                    for (Document document : documents) {
+                        GetFile getFile = new GetFile(document.getFileId());
+                        File executedFile = execute(getFile);
+                        getFilePathsUrls.add(executedFile.getFilePath());
+                    }
+                    Thread.sleep(2000);
+                    SendChatAction sendChatAction = new SendChatAction();
+                    sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
+                    sendChatAction.setChatId(chatId.toString());
+                    execute(sendChatAction);
+                    PDFGenerator pdfGenerator = new PDFGenerator();
+                    pdfGenerator.generatePDF(getFilePathsUrls, update.getMessage().getChatId());
+
+                }
+                if (lists != null) {
+                    for (List<PhotoSize> list : lists) {
+                        System.out.println(apiUrl + list.get(list.size() - 1).getFileId());
+                        GetFile getFile = new GetFile();
+                        System.out.println(list);
+                        getFile.setFileId(list.get(list.size() - 1).getFileId());
+                        File executed = execute(getFile);
+                        String filePath = executed.getFilePath();
+                        getFilePathsUrls.add(filePath);
+                    }
+                    Thread.sleep(2000);
+                    SendChatAction sendChatAction = new SendChatAction();
+                    sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
+                    sendChatAction.setChatId(chatId.toString());
+                    execute(sendChatAction);
+                    PDFGenerator pdfGenerator = new PDFGenerator();
+                    pdfGenerator.generatePDF(getFilePathsUrls, update.getMessage().getChatId());
+
+                }
+
+                SendDocument sendDocument = new SendDocument();
+                sendDocument.setChatId(update.getMessage().getChatId().toString());
+                sendDocument.setCaption(userLanguage.name().equals(Language.UZBEK.name()) ? "PDF file tayyor ! Botimizni do'stlaringizga ham ulashing @pdfdocsbot" : userLanguage.name().equals(Language.ENGLISH.name()) ?
+                        "PDF is ready ! If you like the bot, Please share to your friends @pdfdocsbot" : "PDF готов, если вам нравится наш бот, поделитесь им с друзьями @pdfdocsbot");
+                InputFile inputFile = new InputFile();
+                inputFile.setMedia(new java.io.File("src/main/java/com/google/resources/PDFS/" + chatId + ".pdf"));
+                sendDocument.setDocument(inputFile);
+                sendDocument.setReplyToMessageId(update.getMessage().getMessageId());
+                sendDocument.setReplyMarkup(FramesController.optionsButton(userLanguage));
+                execute(sendDocument);
+                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                InlineKeyboardButton keyboardButton = new InlineKeyboardButton();
+                keyboardButton.setText("Share");
+                keyboardButton.setSwitchInlineQueryCurrentChat("Shared message");
+                List<InlineKeyboardButton> buttons = new ArrayList<>();
+                List<List<InlineKeyboardButton>> col = new ArrayList<>();
+                col.add(buttons);
+                inlineKeyboardMarkup.setKeyboard(col);
+                sendDocument.setReplyMarkup(inlineKeyboardMarkup);
+                java.io.File file = new java.io.File("src/main/java/com/google/resources/PDFS/" + chatId + ".pdf");
+                if (file.delete()) {
+                    System.out.println("deleted");
+                }
+
+                if (lists != null) {
+                    deletePhotos(chatId);
+                }
+                if (documents != null) {
+                    deletePhotos(chatId);
+                }
+                photosMap.remove(update.getMessage().getChatId());
+                documentMap.remove(update.getMessage().getChatId());
+            } catch (IOException | DocumentException | InterruptedException e) {
+                e.printStackTrace();
+                photosMap.remove(update.getMessage().getChatId());
+                documentMap.remove(update.getMessage().getChatId());
+                String s = e.toString();
+                try {
+                    execute(new SendMessage("968877318", s));
+                } catch (TelegramApiException telegramApiException) {
+                    telegramApiException.printStackTrace();
+                }
+
+            }
+        } else {
+            SendMessage sendMessage = MessageController.askPhoto(update);
+            DatabaseService.setBotState(update, BotState.GETPHOTO);
+            execute(sendMessage);
+        }
+
     }
 
 

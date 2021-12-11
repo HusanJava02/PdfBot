@@ -190,4 +190,10 @@ public class MessageController {
         sendMessage.setText(stringBuilder.toString());
         return sendMessage;
     }
+
+    public static SendMessage sendAnimationStiker(Update update) {
+        Result res = getChatId(update);
+        SendMessage sendMessage = new SendMessage(res.getChatId().toString(),"\uD83D\uDCDD");
+        return sendMessage;
+    }
 }

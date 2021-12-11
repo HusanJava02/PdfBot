@@ -118,6 +118,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                                     Message executed = execute(sendMessage);
                                 } else if (text.equals("Generate \uD83D\uDDC2")) {
                                     send(update,userWithChatId.getLanguageUser());
+                                    execute(MessageController.sendAnimationStiker(update));
                                 }
                             } else {
                                 SendChatAction sendChatAction = new SendChatAction();

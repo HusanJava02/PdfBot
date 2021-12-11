@@ -24,7 +24,7 @@ public class DatabaseService {
         String createUserTable = "CREATE TABLE IF NOT EXISTS users\n" +
                 "(\n" +
                 "    id serial,\n" +
-                "    user_name character varying NOT NULL,\n" +
+                "    user_name character varying ,\n" +
                 "    user_id bigint NOT NULL,\n" +
                 "    botstate character varying NOT NULL,\n" +
                 "    language_user varchar(15)," +

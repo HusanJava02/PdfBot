@@ -285,7 +285,7 @@ public class UpdatesController extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "5039461659:AAGCxFgEjUkzm4ForurJxOFNBiS4qxkJTGI";
+        return "5039461659:AAFuWTg0l-wuo4yXBYxgas4LKdrYND-aG54";
     }
 
     public SendChatAction getChatAction(Long chatId) {
@@ -329,7 +329,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                         String filePath = executed.getFilePath();
                         getFilePathsUrls.add(filePath);
                     }
-                    Thread.sleep(2000);
+                    
                     SendChatAction sendChatAction = new SendChatAction();
                     sendChatAction.setAction(ActionType.UPLOADDOCUMENT);
                     sendChatAction.setChatId(chatId.toString());

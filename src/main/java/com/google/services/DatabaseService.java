@@ -8,18 +8,27 @@ import com.google.templates.BotState;
 import com.google.templates.Result;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseService {
-    static String dataSourceUrl = "jdbc:postgresql://ec2-34-249-49-9.eu-west-1.compute.amazonaws.com:5432/dcjtbjn4l9h8rg";
-    static String userName = "mozoatpxptlurz";
-    static String password = "daa5518c46bfea856a9a35c3d2f7bc58a2cb788e9102abfb9b3dc6cdb16abd83";
-//postgres://liiuljqdzabjjq:592add3c49d278cb164fbfe13a9c9f1f4172d717908c193306c9ff283532054c@ec2-54-195-246-55.eu-west-1.compute.amazonaws.com:5432/d9kjl9oq1ti7hd
-//    static String dataSourceUrl = "jdbc:postgresql://localhost:5432/Tg_bot_media";
-//    static String userName = "postgres";
-//    static String password = "husanboy2002";
+    static String dataSourceUrl = "jdbc:postgresql://{HOST}/{DB}";
+
+    static String host;
+
+    public static void setHost(String host, String dbName) {
+        DatabaseService.host = host;
+        DatabaseService.dataSourceUrl = dataSourceUrl
+                .replace("{HOST}",host)
+                .replace("{DB}", dbName);
+
+    }
+
+    public static String userName;
+    public static String password;
+
     static {
         String createUserTable = "CREATE TABLE IF NOT EXISTS users\n" +
                 "(\n" +

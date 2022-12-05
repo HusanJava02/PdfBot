@@ -14,8 +14,8 @@ public class MainInitializer {
         //password
         if (args.length < 3) throw new IllegalArgumentException();
 
-        DatabaseService.setHost(args[0],args[1]);
-        DatabaseService.password = args[2];
+//        DatabaseService.setHost(args[0],args[1]);
+//        DatabaseService.password = args[2];
 
         UpdatesController updatesController = new UpdatesController();
         TelegramBotsApi telegramBotsApi = null;

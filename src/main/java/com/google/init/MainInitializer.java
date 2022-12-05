@@ -12,7 +12,7 @@ public class MainInitializer {
         //1 host
         //2 db_name
         //password
-        if (args.length < 3) throw new IllegalArgumentException();
+//        if (args.length < 3) throw new IllegalArgumentException();
 
 //        DatabaseService.setHost(args[0],args[1]);
 //        DatabaseService.password = args[2];

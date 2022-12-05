@@ -26,7 +26,7 @@ public class DatabaseService {
 
     }
 
-    public static String userName;
+    public static String userName = "postgres";
     public static String password;
 
     static {

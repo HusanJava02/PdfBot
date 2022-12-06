@@ -2,11 +2,13 @@ package com.google.init;
 
 import com.google.controller.UpdatesController;
 import com.google.services.DatabaseService;
+import lombok.SneakyThrows;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class MainInitializer {
+    @SneakyThrows
     public static void main(String[] args) {
 
         //1 host
@@ -19,6 +21,7 @@ public class MainInitializer {
 
         DatabaseService databaseService = new DatabaseService();
         UpdatesController updatesController = new UpdatesController();
+        updatesController.clearWebhook();
         TelegramBotsApi telegramBotsApi = null;
         try {
             telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);

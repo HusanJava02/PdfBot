@@ -22,25 +22,22 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class UpdatesController extends TelegramLongPollingBot {
-    static final String apiUrl = "https://api.telegram.org/bot1762336264:AAGz9-95sFr2BtygeUuPtwjb4GeSlxBBjKk/getFile?file_id=";
+    static final String apiUrl = "https://api.telegram.org/bot5039461659:AAGWrKTmTHfV3aO4uF4E94G76T_dg-8_ZZA/getFile?file_id=";
 
     Map<Long, List<List<PhotoSize>>> photosMap = new HashMap<>();
     Map<Long, List<Document>> documentMap = new HashMap<>();
 
     @Override
     public void onUpdateReceived(Update update) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                updateThread(update);
+        final long count = Thread.getAllStackTraces().keySet().stream().count();
+        System.out.println(count);
 
-            }
-        });
-        thread.start();
-        System.out.println(thread.getId() + " ishladi ");
-
+        final ExecutorService executorService = Executors.newFixedThreadPool(20);
+        executorService.execute(() -> updateThread(update));
     }
 
     public void updateThread(Update update) {
@@ -252,12 +249,12 @@ public class UpdatesController extends TelegramLongPollingBot {
     }
 
     public void deletePhotos(Long chatId) {
-        java.io.File file = new java.io.File("src/main/java/com/google/resources/images/");
+        java.io.File file = new java.io.File("/home/ubuntu/assets");
         String[] list = file.list();
         if (list != null) {
             for (String s : list) {
                 if (s.startsWith(chatId.toString())) {
-                    java.io.File deletingFile = new java.io.File("src/main/java/com/google/resources/images/" + s);
+                    java.io.File deletingFile = new java.io.File("/home/ubuntu/assets" + s);
                     if (deletingFile.delete()) {
                         System.out.println("Deleted+" + s);
                     }
@@ -284,7 +281,7 @@ public class UpdatesController extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "5039461659:AAFuWTg0l-wuo4yXBYxgas4LKdrYND-aG54";
+        return "5039461659:AAGWrKTmTHfV3aO4uF4E94G76T_dg-8_ZZA";
     }
 
     public SendChatAction getChatAction(Long chatId) {
@@ -343,7 +340,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                 sendDocument.setCaption(userLanguage.name().equals(Language.UZBEK.name()) ? "PDF file tayyor ! Botimizni do'stlaringizga ham ulashing @pdfdocsbot" : userLanguage.name().equals(Language.ENGLISH.name()) ?
                         "PDF is ready ! If you like the bot, Please share to your friends @pdfdocsbot" : "PDF готов, если вам нравится наш бот, поделитесь им с друзьями @pdfdocsbot");
                 InputFile inputFile = new InputFile();
-                inputFile.setMedia(new java.io.File("src/main/java/com/google/resources/PDFS/" + chatId + ".pdf"));
+                inputFile.setMedia(new java.io.File("/home/ubuntu/assets/PDFS/" + chatId + ".pdf"));
                 sendDocument.setDocument(inputFile);
                 sendDocument.setReplyToMessageId(update.getMessage().getMessageId());
                 sendDocument.setReplyMarkup(FramesController.optionsButton(userLanguage));
@@ -357,7 +354,7 @@ public class UpdatesController extends TelegramLongPollingBot {
                 col.add(buttons);
                 inlineKeyboardMarkup.setKeyboard(col);
                 sendDocument.setReplyMarkup(inlineKeyboardMarkup);
-                java.io.File file = new java.io.File("src/main/java/com/google/resources/PDFS/" + chatId + ".pdf");
+                java.io.File file = new java.io.File("/home/ubuntu/assets/PDFS/" + chatId + ".pdf");
                 if (file.delete()) {
                     System.out.println("deleted");
                 }

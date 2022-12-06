@@ -14,20 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseService {
-    static String dataSourceUrl = "jdbc:postgresql://{HOST}/{DB}";
+    static String dataSourceUrl = "jdbc:postgresql://localhost:5432/pdfbot";
 
-    static String host;
-
-    public static void setHost(String host, String dbName) {
-        DatabaseService.host = host;
-        DatabaseService.dataSourceUrl = dataSourceUrl
-                .replace("{HOST}",host)
-                .replace("{DB}", dbName);
-
-    }
-
-    public static String userName;
-    public static String password;
+    public static String userName = "postgres";
+    public static String password = "12345";
 
     static {
         String createUserTable = "CREATE TABLE IF NOT EXISTS users\n" +

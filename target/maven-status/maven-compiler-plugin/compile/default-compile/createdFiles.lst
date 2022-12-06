@@ -9,7 +9,6 @@ com\google\model\ChannelTg.class
 com\google\Frames\FramesController$1.class
 com\google\templates\Result.class
 com\google\templates\BotState.class
-com\google\controller\UpdatesController$1.class
 com\google\model\Users.class
 com\google\Frames\FramesController.class
 com\google\generates\PDFGenerator.class

@@ -6,16 +6,19 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import java.io.File;
+
 public class MainInitializer {
     public static void main(String[] args) {
 
-        //1 host
-        //2 db_name
-        //password
-        if (args.length < 3) throw new IllegalArgumentException();
+        File file = new File("/home/ubuntu/assets");
+        file.mkdir();
 
-        DatabaseService.setHost(args[0],args[2]);
-        DatabaseService.password = args[3];
+        File pdfFolder = new File("/home/ubuntu/assets/PDFS");
+        pdfFolder.mkdir();
+
+        File pdfFolderImage = new File("/home/ubuntu/assets/images");
+        pdfFolderImage.mkdir();
 
         UpdatesController updatesController = new UpdatesController();
         TelegramBotsApi telegramBotsApi = null;

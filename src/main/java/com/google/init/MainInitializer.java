@@ -17,6 +17,7 @@ public class MainInitializer {
 //        DatabaseService.setHost(args[0],args[1]);
 //        DatabaseService.password = args[2];
 
+        DatabaseService databaseService = new DatabaseService();
         UpdatesController updatesController = new UpdatesController();
         TelegramBotsApi telegramBotsApi = null;
         try {

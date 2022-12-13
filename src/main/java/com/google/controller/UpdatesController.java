@@ -33,11 +33,11 @@ public class UpdatesController extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        final long count = Thread.getAllStackTraces().keySet().stream().count();
-        System.out.println(count);
-
-        final ExecutorService executorService = Executors.newFixedThreadPool(20);
-        executorService.execute(() -> updateThread(update));
+//        final long count = Thread.getAllStackTraces().keySet().stream().count();
+//        System.out.println(count);
+        updateThread(update);
+//        final ExecutorService executorService = Executors.newFixedThreadPool(20);
+//        executorService.execute(() -> updateThread(update));
     }
 
     public void updateThread(Update update) {

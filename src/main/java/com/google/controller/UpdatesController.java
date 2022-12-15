@@ -281,7 +281,7 @@ public class UpdatesController extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "5039461659:AAGWrKTmTHfV3aO4uF4E94G76T_dg-8_ZZA";
+        return "5039461659:AAFe3YLo6bbGQntb6VtZukV7QJU9XuyvnNk";
     }
 
     public SendChatAction getChatAction(Long chatId) {

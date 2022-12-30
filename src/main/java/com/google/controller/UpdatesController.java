@@ -391,7 +391,7 @@ public class UpdatesController extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            System.out.println("Habar jonatilmadi: \nError message: "+e.getMessage()+"\nChat id: "+sendMessage.getChatId());
         }
     }
 }

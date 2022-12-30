@@ -58,9 +58,8 @@ public class DatabaseService {
         } catch (ClassNotFoundException e) {
             System.out.println("xatolik");
             e.printStackTrace();
-        }
-        finally {
-            if (connection != null){
+        } finally {
+            if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
@@ -87,8 +86,8 @@ public class DatabaseService {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }finally {
-            if (connection!=null){
+        } finally {
+            if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
@@ -110,8 +109,7 @@ public class DatabaseService {
                 int anInt = resultSet.getInt(1);
                 connection.close();
                 return anInt == 1;
-            }
-            else connection.close();
+            } else connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -122,7 +120,7 @@ public class DatabaseService {
 
     public static List<ChannelTg> getChannels() {
         List<ChannelTg> channelTgList = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)){
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from channels");
             if (resultSet.next()) {
@@ -145,7 +143,7 @@ public class DatabaseService {
     public static boolean saveLanguage(Update update, Language language) {
         Result result = MessageController.getChatId(update);
         Long chatId = result.getChatId();
-        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)){
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)) {
             String query = "update users set language_user=? where user_id=?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, language.name());
@@ -163,7 +161,7 @@ public class DatabaseService {
     public static Language getUserLanguage(Update update) {
         Result result = MessageController.getChatId(update);
         Long chatId = result.getChatId();
-        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)){
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)) {
             PreparedStatement preparedStatement = connection.prepareStatement("select language_user from users where user_id=?");
             preparedStatement.setLong(1, chatId);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -172,7 +170,7 @@ public class DatabaseService {
                 language = resultSet.getString(1);
             }
             connection.close();
-            if (language==null) return Language.UZBEK;
+            if (language == null) return Language.UZBEK;
             switch (language) {
                 case "ENGLISH":
                     return Language.ENGLISH;
@@ -196,9 +194,9 @@ public class DatabaseService {
 
         try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)) {
             PreparedStatement preparedStatement = connection.prepareStatement("select botstate from users where user_id=?");
-            preparedStatement.setLong(1,chatId);
+            preparedStatement.setLong(1, chatId);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 String string = resultSet.getString(1);
                 connection.close();
                 return string;
@@ -210,30 +208,33 @@ public class DatabaseService {
         }
         return BotState.START;
     }
-    public static boolean setBotState(Update update,String botState){
+
+    public static boolean setBotState(Update update, String botState) {
         Result result = MessageController.getChatId(update);
         Long chatId = result.getChatId();
 
         try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)) {
             PreparedStatement preparedStatement = connection.prepareStatement("update users set botstate=? where user_id=?");
-            preparedStatement.setString(1,botState);
-            preparedStatement.setLong(2,chatId);
+            preparedStatement.setString(1, botState);
+            preparedStatement.setLong(2, chatId);
             boolean execute = preparedStatement.execute();
             connection.close();
             return execute;
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
-    public static Users getUserWithChatId(Update update){
+
+    public static Users getUserWithChatId(Update update) {
         Result chatId = MessageController.getChatId(update);
 
-        try (Connection connection = DriverManager.getConnection(dataSourceUrl,userName,password)){;
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)) {
+            ;
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from users where user_id=" + chatId.getChatId());
             Users users = new Users();
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 Integer id = resultSet.getInt("id");
                 String userName = resultSet.getString("user_name");
                 String botstate = resultSet.getString("botstate");
@@ -252,7 +253,8 @@ public class DatabaseService {
         }
         return new Users();
     }
-    public static Language getFromString(String lang){
+
+    public static Language getFromString(String lang) {
         switch (lang) {
             case "UZBEK":
                 return Language.UZBEK;
@@ -266,10 +268,10 @@ public class DatabaseService {
 
 
     public static Long getUsersCount() {
-        try (Connection connection = DriverManager.getConnection(dataSourceUrl,userName,password)){
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select count(user_id) from users;");
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 long aLong = resultSet.getLong(1);
 
                 return aLong;
@@ -278,5 +280,26 @@ public class DatabaseService {
             e.printStackTrace();
         }
         return 0L;
+    }
+
+    public static List<Users> getAllUsers() {
+        List<Users> users = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(dataSourceUrl, userName, password)) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select * from users");
+            while (resultSet.next()) {
+                Users user = new Users(
+                        resultSet.getInt("id"),
+                        resultSet.getString("user_name"),
+                        resultSet.getLong("user_id"),
+                        null,
+                        null
+                );
+                users.add(user);
+            }
+            return users;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

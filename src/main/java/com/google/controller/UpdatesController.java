@@ -387,6 +387,12 @@ public class UpdatesController extends TelegramLongPollingBot {
 
     }
 
-
+    public void sendMessage(SendMessage sendMessage){
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

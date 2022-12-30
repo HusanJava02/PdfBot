@@ -46,6 +46,7 @@ public class MainInitializer {
                     updatesController.sendMessage(sendMessage);
                     sendMessage.setChatId("968877318");
                     updatesController.sendMessage(sendMessage);
+                    System.out.println(sendMessage.getText());
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {

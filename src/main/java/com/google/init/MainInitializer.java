@@ -37,16 +37,23 @@ public class MainInitializer {
             @Override
             public void run() {
                 SendMessage sendMessage = new SendMessage();
+                int successCount = 0, failCount = 0;
                 for (Users user : users) {
                     sendMessage.setChatId(String.valueOf(user.getChatId()));
                     sendMessage.setText("Assalomu alaykum botimiz yana ish faoliyatini boshladi\n Endilikda siz bemalol rasmlarni PDF xolatiga o`tkazib olishingiz mumkin");
-                    updatesController.sendMessage(sendMessage);
-                    sendMessage.setChatId("1324394249");
-                    sendMessage.setText("Habar jo`natildi\nUsername: "+user.getUserName()+"\nID: "+user.getChatId());
-                    updatesController.sendMessage(sendMessage);
-                    sendMessage.setChatId("968877318");
-                    updatesController.sendMessage(sendMessage);
-                    System.out.println(sendMessage.getText());
+                    if (updatesController.sendMessage(sendMessage)) {
+                        successCount++;
+                    } else {
+                        failCount++;
+                    }
+                    int count = successCount + failCount;
+                    if (count % 50 == 0 || count == users.size()) {
+                        sendMessage.setChatId("1324394249");
+                        sendMessage.setText(count + "ta habar jo`natildi\nSuccess✅: " + successCount + "\nFail❌: " + failCount);
+                        updatesController.sendMessage(sendMessage);
+                        sendMessage.setChatId("968877318");
+                        updatesController.sendMessage(sendMessage);
+                    }
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {

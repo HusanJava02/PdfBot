@@ -389,16 +389,12 @@ public class UpdatesController extends TelegramLongPollingBot {
     }
 
     @SneakyThrows
-    public void sendMessage(SendMessage sendMessage){
+    public boolean sendMessage(SendMessage sendMessage){
         try {
             execute(sendMessage);
+            return true;
         } catch (TelegramApiException e) {
-            System.out.println("Habar jonatilmadi: \nError message: "+e.getMessage()+"\nChat id: "+sendMessage.getChatId());
-            sendMessage.setChatId("968877318");
-            sendMessage.setText("Habar jonatilmadi: \nError message: "+e.getMessage()+"\nChat id: "+sendMessage.getChatId());
-            execute(sendMessage);
-            sendMessage.setChatId("1324394249");
-            execute(sendMessage);
+            return false;
         }
     }
 }

@@ -7,6 +7,7 @@ import com.google.model.Users;
 import com.google.services.DatabaseService;
 import com.google.templates.BotState;
 import com.itextpdf.text.DocumentException;
+import lombok.SneakyThrows;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
@@ -387,11 +388,17 @@ public class UpdatesController extends TelegramLongPollingBot {
 
     }
 
+    @SneakyThrows
     public void sendMessage(SendMessage sendMessage){
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
             System.out.println("Habar jonatilmadi: \nError message: "+e.getMessage()+"\nChat id: "+sendMessage.getChatId());
+            sendMessage.setChatId("968877318");
+            sendMessage.setText("Habar jonatilmadi: \nError message: "+e.getMessage()+"\nChat id: "+sendMessage.getChatId());
+            execute(sendMessage);
+            sendMessage.setChatId("1324394249");
+            execute(sendMessage);
         }
     }
 }
